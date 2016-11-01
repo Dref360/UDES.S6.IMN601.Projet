@@ -4,7 +4,7 @@ import logging
 
 from keras.datasets import mnist, cifar10
 from sklearn.grid_search import GridSearchCV
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, precision_recall_fscore_support, accuracy_score, confusion_matrix
 
 from lib.config_reader import ConfigReader
 from src.SVM import *
@@ -56,4 +56,11 @@ for score in scores:
     print("The scores are computed on the full evaluation set.")
     print()
     y_true, y_pred = y_test, clf.predict(X_test)
+    pr, rc, f = precision_recall_fscore_support(y_true, y_pred, beta=2)
+    accuracy = accuracy_score(y_true, y_pred)
     print(classification_report(y_true, y_pred))
+    print("--SCORE--")
+    print("Precision : {}, Recall : {}, F-Measure : {}".format(pr, rc, f))
+    print("Accuracy : {}".format(accuracy))
+    print("--CONFUSION MATRIX--")
+    print(confusion_matrix(y_true, y_pred))
