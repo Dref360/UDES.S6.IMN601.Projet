@@ -1,13 +1,12 @@
 # Here, we write the code to train the model
 import argparse
-import keras
-from keras.datasets import mnist,cifar10
-import numpy as np
-from keras.wrappers.scikit_learn import KerasClassifier
 import logging
+
+from keras.datasets import mnist, cifar10
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report
-import matplotlib.pyplot as plt
+
+from lib.config_reader import ConfigReader
 from src.SVM import *
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -20,21 +19,20 @@ options = parser.parse_args()
 logging.basicConfig(filename='logging.log', level=logging.DEBUG,
                     format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
 logging.info(vars(options))
-
+config = ConfigReader("config.json")
 assert options.method in ["SVM"], "Unavailable model"
 if options.method == "SVM":
-    classifier = SVM()
+    classifier = SVM(config)
 else:
     classifier = None
 
-
-assert options.db in ["mnist","cifar10"], "Unavailable db"
+assert options.db in ["mnist", "cifar10"], "Unavailable db"
 if options.db == "mnist":
     (X_train, y_train), (X_test, y_test) = mnist.load_data()
 else:
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
-X_train,X_test = classifier.preprocess([X_train,X_test])
+X_train, X_test = classifier.preprocess([X_train, X_test])
 y_train = y_train.reshape([-1])
 y_test = y_test.reshape([-1])
 
@@ -47,7 +45,7 @@ for score in scores:
     print()
 
     clf = GridSearchCV(classifier.get_classifier(), param_grid,
-                       scoring='%s_macro' % score,n_jobs=4,verbose=4)
+                       scoring='%s_macro' % score, n_jobs=4, verbose=4)
     grid_result = clf.fit(X_train, y_train)
     print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
     for params, mean_score, scores in grid_result.grid_scores_:
