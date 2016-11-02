@@ -3,7 +3,7 @@ import json
 
 class ConfigReader():
     def __init__(self, filename):
-        self.config = json.loads(filename)
+        self.config = json.load(open(filename))
 
     def get_config(self, name):
         return self.config[name]
