@@ -33,6 +33,7 @@ else:
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
 
 X_train, X_test = classifier.preprocess([X_train, X_test])
+X_train, X_test = X_train / 255., X_test / 255.
 y_train = y_train.reshape([-1])
 y_test = y_test.reshape([-1])
 
@@ -40,27 +41,25 @@ param_grid = classifier.get_params()
 
 scores = ['precision', 'recall']
 
-for score in scores:
-    print("# Tuning hyper-parameters for %s" % score)
-    print()
+print("# Tuning hyper-parameters")
+print()
 
-    clf = GridSearchCV(classifier.get_classifier(), param_grid,
-                       scoring='%s_macro' % score, n_jobs=4, verbose=4)
-    grid_result = clf.fit(X_train, y_train)
-    print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
-    for params, mean_score, scores in grid_result.grid_scores_:
-        print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
-    print("Detailed classification report:")
-    print()
-    print("The model is trained on the full development set.")
-    print("The scores are computed on the full evaluation set.")
-    print()
-    y_true, y_pred = y_test, clf.predict(X_test)
-    pr, rc, f = precision_recall_fscore_support(y_true, y_pred, beta=2)
-    accuracy = accuracy_score(y_true, y_pred)
-    print(classification_report(y_true, y_pred))
-    print("--SCORE--")
-    print("Precision : {}, Recall : {}, F-Measure : {}".format(pr, rc, f))
-    print("Accuracy : {}".format(accuracy))
-    print("--CONFUSION MATRIX--")
-    print(confusion_matrix(y_true, y_pred))
+clf = GridSearchCV(classifier.get_classifier(), param_grid, n_jobs=4, verbose=4)
+grid_result = clf.fit(X_train, y_train)
+print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
+for params, mean_score, scores in grid_result.grid_scores_:
+    print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
+print("Detailed classification report:")
+print()
+print("The model is trained on the full development set.")
+print("The scores are computed on the full evaluation set.")
+print()
+y_true, y_pred = y_test, clf.predict(X_test)
+pr, rc, f, true_sum = precision_recall_fscore_support(y_true, y_pred, beta=2)
+accuracy = accuracy_score(y_true, y_pred)
+print(classification_report(y_true, y_pred))
+print("--SCORE--")
+print("Precision : {}, Recall : {}, F-Measure : {}".format(pr, rc, f))
+print("Accuracy : {}".format(accuracy))
+print("--CONFUSION MATRIX--")
+print(confusion_matrix(y_true, y_pred))
