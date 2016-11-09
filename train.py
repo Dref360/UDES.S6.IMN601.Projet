@@ -39,12 +39,10 @@ y_test = y_test.reshape([-1])
 
 param_grid = classifier.get_params()
 
-scores = ['precision', 'recall']
-
 print("# Tuning hyper-parameters")
 print()
 
-clf = GridSearchCV(classifier.get_classifier(), param_grid, n_jobs=4, verbose=4)
+clf = GridSearchCV(classifier.get_classifier(), param_grid, n_jobs=2, verbose=4)
 grid_result = clf.fit(X_train, y_train)
 print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
 for params, mean_score, scores in grid_result.grid_scores_:
