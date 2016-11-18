@@ -14,13 +14,13 @@ def create_bow(datasets, vocab_size=100):
     :param vocab_size: Number of features to extract
     :return:BOW vector for each dataset [[nbImage,nbVocab]]
     """
-    name = "vocab{}".format(vocab_size)
+    name = "vocab{}-{}-{}".format(vocab_size, datasets[0].shape[0], datasets[1].shape[0])
     sift = cv2.xfeatures2d.SIFT_create()
     if os.path.exists("obj/{}.pkl".format(name)):
         vocab = load_obj(name)
     else:
         bow_km = cv2.BOWKMeansTrainer(vocab_size)
-        for img in np.concatenate(datasets):
+        for img in tqdm(np.concatenate(datasets)):
             h = sift.detectAndCompute(img, None)
             if h[1] is not None:
                 bow_km.add(np.array(h[1]))
@@ -30,9 +30,9 @@ def create_bow(datasets, vocab_size=100):
     bow = cv2.BOWImgDescriptorExtractor(sift, cv2.BFMatcher(cv2.NORM_L2))
     bow.setVocabulary(vocab)
     bows = []
-    for data in tqdm(datasets):
+    for data in datasets:
         acc = []
-        for img in data:
+        for img in tqdm(data):
             key, d = sift.detectAndCompute(img, None)
             desc = bow.compute(img, key)
             if desc is None:
