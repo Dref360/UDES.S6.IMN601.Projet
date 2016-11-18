@@ -2,6 +2,7 @@ import os
 
 import cv2
 import numpy as np
+from functools import reduce
 from tqdm import tqdm
 
 from util.pickle_utils import save_obj, load_obj
@@ -45,3 +46,7 @@ def create_bow(datasets, vocab_size=100):
 
 def rgb_2_gray(datasets):
     return [np.asarray([cv2.cvtColor(im, cv2.COLOR_BGR2GRAY) for im in data]).transpose([0, 1, 2]) for data in datasets]
+
+
+def linearize(datasets):
+    return reduce(lambda acc, x: acc + [x.reshape([x.shape[0], -1])], datasets, [])

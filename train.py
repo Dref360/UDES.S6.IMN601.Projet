@@ -7,7 +7,8 @@ import numpy as np
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import *
 
-from classifier.svm import *
+from classifier.random_forest import RandomForest
+from classifier.svm import SVM
 from util.image_utils import rgb_2_gray, create_bow
 
 # Note: keras library is imported dynamically
@@ -15,8 +16,8 @@ from util.image_utils import rgb_2_gray, create_bow
 
 # Parse args
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('--db', default='mnist', type=str, help='Keras dataset to use [mnist, cifar10]')
-parser.add_argument("--method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
+parser.add_argument("--db", default="mnist", type=str, help="Keras dataset to use [mnist, cifar10]")
+parser.add_argument("--method", default="SVM", type=str, help="[SVM, RandomForest")
 parser.add_argument("--train_set_prop", default=1, type=float, help="proportion of training samples to keep")
 parser.add_argument("--test_set_prop", default=1, type=float, help="proportion of test samples to keep")
 parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
@@ -35,12 +36,12 @@ logger.info("======= Session start =======")
 logger.info('Args: %s', vars(options))
 
 # Create classifier
-config = json.load(open("config.json"))
-assert options.method in ["SVM"], "Unavailable model"
 if options.method == "SVM":
-    classifier = SVM(config["SVM"])
+    clf = SVM()
+elif options.method == "RandomForest":
+    clf = RandomForest()
 else:
-    classifier = None
+    assert False, "Unavailable model"
 
 # Load dataset based on database name
 logger.info("Downloading {} Keras dataset".format(options.db))
@@ -70,7 +71,7 @@ else:
 
 # Preprocess samples
 logger.info("Preprocessing samples")
-X_train, X_test = classifier.preprocess([X_train, X_test])
+X_train, X_test = clf.preprocess([X_train, X_test])
 y_train = y_train.reshape([-1])
 y_test = y_test.reshape([-1])
 logger.info("X_train shape : {}".format(X_train.shape))
@@ -78,7 +79,8 @@ logger.info("X_test shape : {}".format(X_test.shape))
 
 # Perform grid-search on hyper-parameters
 logger.info("Tuning hyper-parameters with grid search\n")
-clf = GridSearchCV(classifier.get_classifier(), classifier.get_params(), n_jobs=options.n_jobs, verbose=4)
+config = json.load(open("config.json"))[options.method]
+clf = GridSearchCV(clf.get_classifier(), config, n_jobs=options.n_jobs, verbose=4)
 grid_result = clf.fit(X_train, y_train)
 
 # Compute predictions
