@@ -21,6 +21,7 @@ parser.add_argument("--train_set_prop", default=1, type=float, help="proportion 
 parser.add_argument("--test_set_prop", default=1, type=float, help="proportion of test samples to keep")
 parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
 parser.add_argument("--vocab_length", default=100, type=int, help="length of vocabulary for BOW")
+parser.add_argument("--n_jobs", default=2, type=int, help="number of threads executing grid search")
 options = parser.parse_args()
 
 # Configure logger to write to console and to a file
@@ -77,7 +78,7 @@ logger.info("X_test shape : {}".format(X_test.shape))
 
 # Perform grid-search on hyper-parameters
 logger.info("Tuning hyper-parameters with grid search\n")
-clf = GridSearchCV(classifier.get_classifier(), classifier.get_params(), n_jobs=2, verbose=4)
+clf = GridSearchCV(classifier.get_classifier(), classifier.get_params(), n_jobs=options.n_jobs, verbose=4)
 grid_result = clf.fit(X_train, y_train)
 
 # Compute predictions
