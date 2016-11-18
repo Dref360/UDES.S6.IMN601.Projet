@@ -7,8 +7,8 @@ from keras.datasets import mnist, cifar10
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report, precision_recall_fscore_support, accuracy_score, confusion_matrix
 
-from lib.config_reader import ConfigReader
-from lib.image_util import rgb_2_gray, create_bow
+from config_reader import ConfigReader
+from image_util import rgb_2_gray, create_bow
 from src.SVM import *
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
