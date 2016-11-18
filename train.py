@@ -16,8 +16,6 @@ from src.SVM import *
 # Parse args
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--db', default='mnist', type=str, help='Keras dataset to use [mnist, cifar10]')
-parser.add_argument("--batch_size", default=1, type=int, help="batch size")
-parser.add_argument("--n_epochs", default=10, type=int, help="nb epochs")
 parser.add_argument("--method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
 parser.add_argument("--train_set_prop", default=1, type=float, help="proportion of training samples to keep")
 parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
@@ -85,7 +83,7 @@ y_true, y_pred = y_test, clf.predict(X_test)
 
 # Log grid search results
 logger.info("Grid search results\n\n" + "".join("%f (±%f) with %r" % (scores.mean(), scores.std(), params) + "\n"
-                                              for params, mean_score, scores in grid_result.grid_scores_))
+                                                for params, mean_score, scores in grid_result.grid_scores_))
 logger.info("Best hyper-parameters: {}\n".format(grid_result.best_params_))
 
 # Analyse results
