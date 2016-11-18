@@ -1,5 +1,6 @@
 # Here, we write the code to train the model
 import argparse
+import json
 import logging
 
 import numpy as np
@@ -7,7 +8,6 @@ from keras.datasets import mnist, cifar10
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report, precision_recall_fscore_support, accuracy_score, confusion_matrix
 
-from config_reader import ConfigReader
 from image_util import rgb_2_gray, create_bow
 from src.SVM import *
 
@@ -23,10 +23,10 @@ options = parser.parse_args()
 logging.basicConfig(filename='logging.log', level=logging.DEBUG,
                     format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
 logging.info(vars(options))
-config = ConfigReader("config.json")
+config = json.load(open("config.json"))
 assert options.method in ["SVM"], "Unavailable model"
 if options.method == "SVM":
-    classifier = SVM(config)
+    classifier = SVM(config["SVM"])
 else:
     classifier = None
 
