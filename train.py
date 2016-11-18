@@ -8,7 +8,7 @@ from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report, precision_recall_fscore_support, accuracy_score, confusion_matrix
 
 from lib.config_reader import ConfigReader
-from lib.image_util import get_BOW, RGB_2_gray
+from lib.image_util import rgb_2_gray, create_bow
 from src.SVM import *
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -41,8 +41,8 @@ else:
 assert options.features in ["original", "BOW"], "Unavailable features selections"
 if options.features == "BOW":
     if X_train.shape[-1] != 1 and len(X_train.shape) > 3:
-        X_train, X_test = RGB_2_gray([X_train, X_test])
-    X_train, X_test = get_BOW([X_train, X_test], options.vocab_length)
+        X_train, X_test = rgb_2_gray([X_train, X_test])
+    X_train, X_test = create_bow([X_train, X_test], options.vocab_length)
 else:
     X_train, X_test = X_train / 255., X_test / 255.
 
