@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('--db', default='mnist', type=str, help='Keras dataset to use [mnist, cifar10]')
 parser.add_argument("--method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
 parser.add_argument("--train_set_prop", default=1, type=float, help="proportion of training samples to keep")
+parser.add_argument("--test_set_prop", default=1, type=float, help="proportion of test samples to keep")
 parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
 parser.add_argument("--vocab_length", default=100, type=int, help="length of vocabulary for BOW")
 options = parser.parse_args()
@@ -52,6 +53,8 @@ if options.db == "cifar10":
 # Shrink training set size if needed
 X_train = X_train[0:round(X_train.shape[0] * options.train_set_prop)]
 y_train = y_train[0:round(y_train.shape[0] * options.train_set_prop)]
+X_test = X_test[0:round(X_test.shape[0] * options.test_set_prop)]
+y_test = y_test[0:round(y_test.shape[0] * options.test_set_prop)]
 
 # Extract features
 assert options.features in ["original", "BOW"], "Unavailable features selections"
