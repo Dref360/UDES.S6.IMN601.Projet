@@ -1,4 +1,3 @@
-# Here, we write the code to train the model
 import argparse
 import importlib
 import json
@@ -6,7 +5,7 @@ import logging
 
 import numpy as np
 from sklearn.grid_search import GridSearchCV
-from sklearn.metrics import classification_report, precision_recall_fscore_support, accuracy_score, confusion_matrix
+from sklearn.metrics import *
 
 from image_util import rgb_2_gray, create_bow
 from src.SVM import *
@@ -14,20 +13,28 @@ from src.SVM import *
 # Note: keras library is imported dynamically
 
 
+# Parse args
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('--db', default='mnist', type=str, help='Keras dataset to use [mnist, cifar10]')
-parser.add_argument("--batch_size", dest="batch_size", default=1, type=int, help="batch size")
-parser.add_argument("--n_epochs", dest="n_epochs", default=10, type=int, help="nb epochs")
-parser.add_argument("--method", dest="method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
-parser.add_argument("--train_set_prop", dest="train_set_prop", default=1, type=float,
-                    help="proportion of training samples to keep")
-parser.add_argument("--features", dest="features", default="original", type=str, help="[original,BOW]")
-parser.add_argument("--vocab_length", dest="vocab_length", default=100, type=int, help="length of vocabulary for BOW")
+parser.add_argument("--batch_size", default=1, type=int, help="batch size")
+parser.add_argument("--n_epochs", default=10, type=int, help="nb epochs")
+parser.add_argument("--method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
+parser.add_argument("--train_set_prop", default=1, type=float, help="proportion of training samples to keep")
+parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
+parser.add_argument("--vocab_length", default=100, type=int, help="length of vocabulary for BOW")
 options = parser.parse_args()
 
-logging.basicConfig(filename='logging.log', level=logging.DEBUG,
-                    format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
-logging.info(vars(options))
+# Configure logger to write to console and to a file
+logger = logging.getLogger('IMN601 - Project')
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+for h in [logging.FileHandler('logging.log'), logging.StreamHandler()]:
+    h.setFormatter(formatter)
+    logger.addHandler(h)
+logger.info("======= Session start =======")
+logger.info('Args: %s', vars(options))
+
+# Create classifier
 config = json.load(open("config.json"))
 assert options.method in ["SVM"], "Unavailable model"
 if options.method == "SVM":
@@ -36,51 +43,53 @@ else:
     classifier = None
 
 # Load dataset based on database name
+logger.info("Downloading {} Keras dataset".format(options.db))
 module = importlib.import_module('keras.datasets.' + options.db)
 (X_train, y_train), (X_test, y_test) = module.load_data()
-
 # TODO: understand this
 if options.db == "cifar10":
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
 
+# Shrink training set size if needed
 X_train = X_train[0:round(X_train.shape[0] * options.train_set_prop)]
 y_train = y_train[0:round(y_train.shape[0] * options.train_set_prop)]
 
+# Extract features
 assert options.features in ["original", "BOW"], "Unavailable features selections"
 if options.features == "BOW":
     if X_train.shape[-1] != 1 and len(X_train.shape) > 3:
+        logger.info("Converting rgb images to grayscale")
         X_train, X_test = rgb_2_gray([X_train, X_test])
+    logger.info("Creating bag of words")
     X_train, X_test = create_bow([X_train, X_test], options.vocab_length)
 else:
     X_train, X_test = X_train / 255., X_test / 255.
 
+# Preprocess samples
+logger.info("Preprocessing samples")
 X_train, X_test = classifier.preprocess([X_train, X_test])
 y_train = y_train.reshape([-1])
 y_test = y_test.reshape([-1])
-print("X_train shape : {}".format(X_train.shape))
-print("X_test shape : {}".format(X_test.shape))
-param_grid = classifier.get_params()
+logger.info("X_train shape : {}".format(X_train.shape))
+logger.info("X_test shape : {}".format(X_test.shape))
 
-print("# Tuning hyper-parameters")
-print()
-
-clf = GridSearchCV(classifier.get_classifier(), param_grid, n_jobs=2, verbose=4)
+# Perform grid-search on hyper-parameters
+logger.info("Tuning hyper-parameters with grid search\n")
+clf = GridSearchCV(classifier.get_classifier(), classifier.get_params(), n_jobs=2, verbose=4)
 grid_result = clf.fit(X_train, y_train)
-print("Best: %f using %s" % (grid_result.best_score_, grid_result.best_params_))
-for params, mean_score, scores in grid_result.grid_scores_:
-    print("%f (%f) with: %r" % (scores.mean(), scores.std(), params))
-print("Detailed classification report:")
-print()
-print("The model is trained on the full development set.")
-print("The scores are computed on the full evaluation set.")
-print()
+
+# Compute predictions
+logger.info("Compute predictions\n")
 y_true, y_pred = y_test, clf.predict(X_test)
-pr, rc, f, true_sum = precision_recall_fscore_support(y_true, y_pred, beta=2)
-accuracy = accuracy_score(y_true, y_pred)
-print(classification_report(y_true, y_pred))
-print("--SCORE--")
-print("Precision : {}, Recall : {}, F-Measure : {}".format(pr, rc, f))
-print("Accuracy : {}".format(accuracy))
-print("--CONFUSION MATRIX--")
-print(confusion_matrix(y_true, y_pred))
+
+# Log grid search results
+logger.info("Grid search results\n\n" + "".join("%f (±%f) with %r" % (scores.mean(), scores.std(), params) + "\n"
+                                              for params, mean_score, scores in grid_result.grid_scores_))
+logger.info("Best hyper-parameters: {}\n".format(grid_result.best_params_))
+
+# Analyse results
+logger.info("Classification report\n\n{}".format(classification_report(y_true, y_pred)))
+logger.info("Confusion matrix\n\n{}\n".format(confusion_matrix(y_true, y_pred)))
+logger.info("Overall accuracy : ==> {} <==".format(accuracy_score(y_true, y_pred)))
+logger.info("With hyper-parameters: {}".format(grid_result.best_params_))
