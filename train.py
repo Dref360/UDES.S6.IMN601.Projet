@@ -1,18 +1,21 @@
 # Here, we write the code to train the model
 import argparse
+import importlib
 import json
 import logging
 
 import numpy as np
-from keras.datasets import mnist, cifar10
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report, precision_recall_fscore_support, accuracy_score, confusion_matrix
 
 from image_util import rgb_2_gray, create_bow
 from src.SVM import *
 
+# Note: keras library is imported dynamically
+
+
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument("--db", dest="db", default="mnist", type=str, help="database to use [cifar10,mnist]")
+parser.add_argument('--db', default='mnist', type=str, help='Keras dataset to use [mnist, cifar10]')
 parser.add_argument("--batch_size", dest="batch_size", default=1, type=int, help="batch size")
 parser.add_argument("--n_epochs", dest="n_epochs", default=10, type=int, help="nb epochs")
 parser.add_argument("--method", dest="method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
@@ -32,11 +35,12 @@ if options.method == "SVM":
 else:
     classifier = None
 
-assert options.db in ["mnist", "cifar10"], "Unavailable db"
-if options.db == "mnist":
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
-else:
-    (X_train, y_train), (X_test, y_test) = cifar10.load_data()
+# Load dataset based on database name
+module = importlib.import_module('keras.datasets.' + options.db)
+(X_train, y_train), (X_test, y_test) = module.load_data()
+
+# TODO: understand this
+if options.db == "cifar10":
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
 
