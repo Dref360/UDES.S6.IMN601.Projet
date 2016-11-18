@@ -1,15 +1,15 @@
-from abc import ABCMeta,abstractmethod
-from functools import reduce
+from abc import ABCMeta, abstractmethod
+
 
 class BaseClassifier:
     __metaclass__ = ABCMeta
+
     def __init__(self):
         self._classifier = None
         self._params = {}
 
-
     @abstractmethod
-    def preprocess(self,datas):
+    def preprocess(self, datasets):
         pass
 
     def get_classifier(self):
