@@ -16,8 +16,10 @@ parser.add_argument("--db", dest="db", default="mnist", type=str, help="database
 parser.add_argument("--batch_size", dest="batch_size", default=1, type=int, help="batch size")
 parser.add_argument("--n_epochs", dest="n_epochs", default=10, type=int, help="nb epochs")
 parser.add_argument("--method", dest="method", default="SVM", type=str, help="[SVM,KNN,CNN,MLP]")
+parser.add_argument("--train_set_prop", dest="train_set_prop", default=1, type=float,
+                    help="proportion of training samples to keep")
 parser.add_argument("--features", dest="features", default="original", type=str, help="[original,BOW]")
-parser.add_argument("--vocab_length", dest="vocab_length", default=100, type=int, help="Length of vocabulary for BOW")
+parser.add_argument("--vocab_length", dest="vocab_length", default=100, type=int, help="length of vocabulary for BOW")
 options = parser.parse_args()
 
 logging.basicConfig(filename='logging.log', level=logging.DEBUG,
@@ -37,6 +39,9 @@ else:
     (X_train, y_train), (X_test, y_test) = cifar10.load_data()
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
+
+X_train = X_train[0:round(X_train.shape[0] * options.train_set_prop)]
+y_train = y_train[0:round(y_train.shape[0] * options.train_set_prop)]
 
 assert options.features in ["original", "BOW"], "Unavailable features selections"
 if options.features == "BOW":
