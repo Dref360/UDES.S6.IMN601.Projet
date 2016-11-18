@@ -7,8 +7,8 @@ import numpy as np
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import *
 
-from image_util import rgb_2_gray, create_bow
-from src.SVM import *
+from classifier.SVM import *
+from util.image_utils import rgb_2_gray, create_bow
 
 # Note: keras library is imported dynamically
 

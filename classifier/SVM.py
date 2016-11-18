@@ -1,6 +1,6 @@
 from sklearn.svm import SVC
 
-from src.base_classifier import BaseClassifier, reduce
+from classifier.base_classifier import BaseClassifier, reduce
 
 
 class SVM(BaseClassifier):

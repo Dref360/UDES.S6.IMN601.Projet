@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-from pickle_saving import save_obj, load_obj
+from util.pickle_utils import save_obj, load_obj
 
 
 def create_bow(datasets, vocab_size=100):
