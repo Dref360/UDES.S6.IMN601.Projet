@@ -2,15 +2,17 @@ import argparse
 import importlib
 import json
 import logging
+from functools import reduce
 
 import numpy as np
+from keras.utils import np_utils
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import *
 
+from classifier.MLPNet import MLPNet
 from classifier.random_forest import RandomForest
 from classifier.svm import SVM
 from util.image_utils import rgb_2_gray, create_bow
-from classifier.MLPNet import MLPNet
 
 # Note: keras library is imported dynamically
 
@@ -51,7 +53,7 @@ if options.method == "SVM":
 elif options.method == "RandomForest":
     clf = RandomForest()
 elif options.method == "MLP":
-    clf = MLPNet(input_shape=X_train.shape[1:],output_size=10)
+    clf = MLPNet(input_shape=[reduce(lambda x, y: x * y, X_train.shape[1:], 1)], output_size=10)
 else:
     assert False, "Unavailable model"
 
@@ -72,11 +74,17 @@ if options.features == "BOW":
 else:
     X_train, X_test = X_train / 255., X_test / 255.
 
+if options.method in ["MLP", "CNN"]:
+    y_train = np_utils.to_categorical(y_train, 10)
+    y_test = np_utils.to_categorical(y_test, 10)
+else:
+    y_train = y_train.reshape([-1])
+    y_test = y_test.reshape([-1])
+
 # Preprocess samples
 logger.info("Preprocessing samples")
 X_train, X_test = clf.preprocess([X_train, X_test])
-y_train = y_train.reshape([-1])
-y_test = y_test.reshape([-1])
+
 logger.info("X_train shape : {}".format(X_train.shape))
 logger.info("X_test shape : {}".format(X_test.shape))
 

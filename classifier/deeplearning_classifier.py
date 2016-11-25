@@ -9,9 +9,13 @@ class BaseDeepLearning(BaseClassifier):
         super().__init__()
         self.input_shape = input_shape
         self.output_size = output_size
-        self._classifier = KerasClassifier(build_fn=self._build_func)
+        self._classifier = KerasClassifier(build_fn=self)
 
-    def _build_func(self, optimizer="rmsprop", init="glorot_uniform"):
+    def __call__(self, optimizer="rmsprop", init="glorot_uniform"):
+        raise NotImplementedError
+
+    @staticmethod
+    def get_optimizer(optimizer):
         if isinstance(optimizer, tuple):
             """We expect ("name", param)"""
             name, param = optimizer
@@ -20,10 +24,4 @@ class BaseDeepLearning(BaseClassifier):
                 optimizer = RMSprop(*param)
             elif name == "sgd":
                 optimizer = SGD(*param)
-
-        model = self._build_model(init)
-        model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-        return model
-
-    def _build_model(self, init_func):
-        raise NotImplementedError
+        return optimizer
