@@ -15,5 +15,10 @@
     {
       "criterion": ["gini", "entropy"],
       "n_estimators": [1, 10, 100, 1000]
-    }
+    },
+  "MLP":
+  {
+    "optimizer" : ["rmsprop"],
+    "init" : ["glorot_uniform", "normal", "uniform"]
+  }
 }

@@ -10,6 +10,7 @@ from sklearn.metrics import *
 from classifier.random_forest import RandomForest
 from classifier.svm import SVM
 from util.image_utils import rgb_2_gray, create_bow
+from classifier.MLPNet import MLPNet
 
 # Note: keras library is imported dynamically
 
@@ -17,7 +18,7 @@ from util.image_utils import rgb_2_gray, create_bow
 # Parse args
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("--db", default="mnist", type=str, help="Keras dataset to use [mnist, cifar10]")
-parser.add_argument("--method", default="SVM", type=str, help="[SVM, RandomForest")
+parser.add_argument("--method", default="SVM", type=str, help="[SVM, RandomForest, MLP, CNN]")
 parser.add_argument("--train_set_prop", default=1, type=float, help="proportion of training samples to keep")
 parser.add_argument("--test_set_prop", default=1, type=float, help="proportion of test samples to keep")
 parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
@@ -35,14 +36,6 @@ for h in [logging.FileHandler('logging.log'), logging.StreamHandler()]:
 logger.info("======= Session start =======")
 logger.info('Args: %s', vars(options))
 
-# Create classifier
-if options.method == "SVM":
-    clf = SVM()
-elif options.method == "RandomForest":
-    clf = RandomForest()
-else:
-    assert False, "Unavailable model"
-
 # Load dataset based on database name
 logger.info("Downloading {} Keras dataset".format(options.db))
 module = importlib.import_module('keras.datasets.' + options.db)
@@ -51,6 +44,16 @@ module = importlib.import_module('keras.datasets.' + options.db)
 if options.db == "cifar10":
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
+
+# Create classifier
+if options.method == "SVM":
+    clf = SVM()
+elif options.method == "RandomForest":
+    clf = RandomForest()
+elif options.method == "MLP":
+    clf = MLPNet(input_shape=X_train.shape[1:],output_size=10)
+else:
+    assert False, "Unavailable model"
 
 # Shrink training set size if needed
 X_train = X_train[0:round(X_train.shape[0] * options.train_set_prop)]
