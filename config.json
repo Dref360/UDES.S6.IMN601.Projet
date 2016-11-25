@@ -18,7 +18,12 @@
     },
   "MLP":
   {
-    "optimizer" : ["rmsprop"],
+    "optimizer" : ["rmsprop", "SGD"],
+    "init" : ["glorot_uniform", "normal", "uniform"]
+  },
+  "CNN":
+  {
+    "optimizer" : ["rmsprop", "SGD"],
     "init" : ["glorot_uniform", "normal", "uniform"]
   }
 }
