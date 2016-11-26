@@ -76,7 +76,6 @@ else:
 
 if options.method in ["MLP", "CNN"]:
     y_train = np_utils.to_categorical(y_train, 10)
-    y_test = np_utils.to_categorical(y_test, 10)
 else:
     y_train = y_train.reshape([-1])
     y_test = y_test.reshape([-1])
@@ -96,7 +95,7 @@ grid_result = clf.fit(X_train, y_train)
 
 # Compute predictions
 logger.info("Compute predictions\n")
-y_true, y_pred = y_test, clf.predict(X_test)
+y_pred = clf.predict(X_test)
 
 # Log grid search results
 logger.info("Grid search results\n\n" + "".join("%f (±%f) with %r" % (scores.mean(), scores.std(), params) + "\n"
@@ -104,7 +103,7 @@ logger.info("Grid search results\n\n" + "".join("%f (±%f) with %r" % (scores.me
 logger.info("Best hyper-parameters: {}\n".format(grid_result.best_params_))
 
 # Analyse results
-logger.info("Classification report\n\n{}".format(classification_report(y_true, y_pred)))
-logger.info("Confusion matrix\n\n{}\n".format(confusion_matrix(y_true, y_pred)))
-logger.info("Overall accuracy : ==> {} <==".format(accuracy_score(y_true, y_pred)))
+logger.info("Classification report\n\n{}".format(classification_report(y_test, y_pred)))
+logger.info("Confusion matrix\n\n{}\n".format(confusion_matrix(y_test, y_pred)))
+logger.info("Overall accuracy : ==> {} <==".format(accuracy_score(y_test, y_pred)))
 logger.info("With hyper-parameters: {}".format(grid_result.best_params_))

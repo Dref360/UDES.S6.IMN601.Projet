@@ -16,12 +16,12 @@ class BaseDeepLearning(BaseClassifier):
 
     @staticmethod
     def get_optimizer(optimizer):
-        if isinstance(optimizer, tuple):
-            """We expect ("name", param)"""
+        if isinstance(optimizer, list):
+            """We expect ("name", dict(param))"""
             name, param = optimizer
             assert name in ["rmsprop", "sgd"], "Not supported optimizer"
             if name == "rmsprop":
-                optimizer = RMSprop(*param)
+                optimizer = RMSprop(**param)
             elif name == "sgd":
                 optimizer = SGD(*param)
         return optimizer
