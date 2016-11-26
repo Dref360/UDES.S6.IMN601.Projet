@@ -11,7 +11,7 @@ class BaseDeepLearning(BaseClassifier):
         self.output_size = output_size
         self._classifier = KerasClassifier(build_fn=self)
 
-    def __call__(self, optimizer="rmsprop", init="glorot_uniform"):
+    def __call__(self, optimizer="rmsprop", init="glorot_uniform", activation="relu"):
         raise NotImplementedError
 
     @staticmethod

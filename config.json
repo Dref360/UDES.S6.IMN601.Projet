@@ -18,7 +18,22 @@
     },
   "MLP":
   {
+    "nb_epoch": [
+      100,
+      150,
+      200,
+      250
+    ],
     "optimizer" : ["rmsprop"],
-    "init" : ["glorot_uniform", "normal", "uniform"]
+    "init": [
+      "glorot_uniform",
+      "normal",
+      "uniform"
+    ],
+    "activation": [
+      "sigmoid",
+      "relu",
+      "tanh"
+    ]
   }
 }
