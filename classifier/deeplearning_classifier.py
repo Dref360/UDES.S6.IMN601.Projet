@@ -23,5 +23,5 @@ class BaseDeepLearning(BaseClassifier):
             if name == "rmsprop":
                 optimizer = RMSprop(**param)
             elif name == "sgd":
-                optimizer = SGD(*param)
+                optimizer = SGD(**param)
         return optimizer

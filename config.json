@@ -20,9 +20,7 @@
   {
     "nb_epoch": [
       100,
-      150,
-      200,
-      250
+      150
     ],
     "optimizer": [
       [
@@ -42,17 +40,29 @@
         {
           "lr": 0.0001
         }
+      ],
+      [
+        "sgd",
+        {
+          "lr": 0.001,
+          "nesterov": false
+        }
+      ],
+      [
+        "sgd",
+        {
+          "lr": 0.001,
+          "nesterov": true
+        }
       ]
     ],
     "init": [
       "glorot_uniform",
-      "normal",
-      "uniform"
+      "normal"
     ],
     "activation": [
       "sigmoid",
-      "relu",
-      "tanh"
+      "relu"
     ]
   }
 }
