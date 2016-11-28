@@ -9,7 +9,7 @@ from keras.utils import np_utils
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import *
 
-from classifier.cnn import CNN
+from classifier.CNN import CNN
 from classifier.MLPNet import MLPNet
 from classifier.random_forest import RandomForest
 from classifier.svm import SVM
@@ -57,7 +57,7 @@ elif options.method == "RandomForest":
 elif options.method == "MLP":
     clf = MLPNet(input_shape=[reduce(lambda x, y: x * y, X_train.shape[1:], 1)], output_size=10, n_epoch=options.n_epoch)
 elif options.method == "CNN":
-    clf = CNN(input_shape=[reduce(lambda x, y: x * y, X_train.shape[1:], 1)], output_size=10, n_epoch=options.n_epoch)
+    clf = CNN(input_shape=X_train.shape[1:], output_size=10, n_epoch=options.n_epoch)
 else:
     assert False, "Unavailable model"
 
