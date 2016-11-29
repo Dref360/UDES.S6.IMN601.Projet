@@ -25,7 +25,6 @@ parser.add_argument("--train_set_prop", default=1, type=float, help="proportion 
 parser.add_argument("--test_set_prop", default=1, type=float, help="proportion of test samples to keep")
 parser.add_argument("--features", default="original", type=str, help="[original,BOW]")
 parser.add_argument("--vocab_length", default=100, type=int, help="length of vocabulary for BOW")
-parser.add_argument("--n_epoch", default=100, type=int, help="number of training epoch")
 parser.add_argument("--n_jobs", default=2, type=int, help="number of threads executing grid search")
 options = parser.parse_args()
 
@@ -53,9 +52,9 @@ if options.method == "SVM":
 elif options.method == "RandomForest":
     clf = RandomForest()
 elif options.method == "MLP":
-    clf = MLPNet(input_shape=[reduce(lambda x, y: x * y, X_train.shape[1:], 1)], output_size=10, n_epoch=options.n_epoch)
+    clf = MLPNet(input_shape=[reduce(lambda x, y: x * y, X_train.shape[1:], 1)], output_size=10)
 elif options.method == "CNN":
-    clf = CNN(input_shape=X_train.shape[1:], output_size=10, n_epoch=options.n_epoch)
+    clf = CNN(input_shape=X_train.shape[1:], output_size=10)
 else:
     assert False, "Unavailable model"
 

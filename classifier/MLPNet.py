@@ -6,12 +6,14 @@ from util.image_utils import linearize
 
 
 class MLPNet(BaseDeepLearning):
-    def __call__(self, optimizer="rmsprop", init="glorot_uniform"):
+    def __call__(self, optimizer="rmsprop", init="glorot_uniform", activation="relu"):
         optimizer = BaseDeepLearning.get_optimizer(optimizer)
         model = Sequential()
-        model.add(Dense(30, input_shape=self.input_shape))
-        model.add(Dense(30))
-        model.add(Dense(self.output_size))
+        model.add(Dense(512, input_shape=self.input_shape, activation=activation, init=init))
+        model.add(Dense(512, activation=activation, init=init))
+        model.add(Dense(256, activation=activation, init=init))
+        model.add(Dense(64, activation=activation, init=init))
+        model.add(Dense(self.output_size, activation="softmax"))
         model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         return model
 
