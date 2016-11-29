@@ -5,6 +5,7 @@ import logging
 from functools import reduce
 
 import numpy as np
+from keras.backend import backend
 from keras.utils import np_utils
 from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import *
@@ -14,8 +15,6 @@ from classifier.MLPNet import MLPNet
 from classifier.random_forest import RandomForest
 from classifier.svm import SVM
 from util.image_utils import rgb_2_gray, create_bow
-
-# Note: keras library is imported dynamically
 
 
 # Parse args
@@ -44,8 +43,7 @@ logger.info('Args: %s', vars(options))
 logger.info("Downloading {} Keras dataset".format(options.db))
 module = importlib.import_module('keras.datasets.' + options.db)
 (X_train, y_train), (X_test, y_test) = module.load_data()
-# TODO: understand this
-if options.db == "cifar10":
+if options.db == "cifar10" and backend() == "tensorflow" and options.method == "CNN":
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
 
