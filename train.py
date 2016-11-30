@@ -45,6 +45,11 @@ module = importlib.import_module('keras.datasets.' + options.db)
 if options.db == "cifar10" and backend() == "tensorflow" and options.method == "CNN":
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
+if options.db == "mnist" and options.method == "CNN":
+    X_train = X_train.reshape(X_train.shape[0], 28, 28, 1)
+    X_test = X_test.reshape(X_test.shape[0], 28, 28, 1)
+    X_train = np.transpose(X_train, [0, 3, 1, 2])
+    X_test = np.transpose(X_test, [0, 3, 1, 2])
 
 # Create classifier
 if options.method == "SVM":

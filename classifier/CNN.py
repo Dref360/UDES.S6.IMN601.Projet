@@ -6,7 +6,7 @@ from util.image_utils import linearize
 
 
 class CNN(BaseDeepLearning):
-    def __call__(self, optimizer="rmsprop", init="glorot_uniform"):
+    def __call__(self, optimizer="rmsprop", init="glorot_uniform", activation="relu"):
         optimizer = BaseDeepLearning.get_optimizer(optimizer)
 
         model = Sequential()
@@ -28,6 +28,7 @@ class CNN(BaseDeepLearning):
         model.add(Activation("softmax"))
 
         model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=["accuracy"])
+
         return model
 
     def preprocess(self, datasets):
