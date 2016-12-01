@@ -14,7 +14,7 @@ class MLPNet(BaseDeepLearning):
         model.add(Dense(256, activation=activation, init=init))
         model.add(Dense(64, activation=activation, init=init))
         model.add(Dense(self.output_size, activation="softmax"))
-        model.compile(loss='binary_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
         return model
 
     def preprocess(self, datasets):
