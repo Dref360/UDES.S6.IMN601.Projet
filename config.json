@@ -19,27 +19,25 @@
   "MLP":
   {
     "nb_epoch": [100, 150],
+    "batch_size": [150],
     "optimizer": [
-      ["rmsprop", { "lr": 0.0001 }],
-      ["rmsprop", { "lr": 0.001  }],
-      ["rmsprop", { "lr": 0.01   }],
-      ["sgd",     { "lr": 0.001, "nesterov": false}],
+      ["rmsprop", { "lr": 0.001 }],
+      ["rmsprop", { "lr": 0.0001  }],
       ["sgd",     { "lr": 0.001, "nesterov": true }]
     ],
-    "init": ["glorot_uniform", "normal"],
-    "activation": ["sigmoid", "relu"]
+    "init": ["normal"],
+    "activation": ["relu"]
   },
   "CNN":
   {
     "nb_epoch": [100, 150],
+    "batch_size": [150],
     "optimizer": [
-      ["rmsprop", { "lr": 0.0001 }],
-      ["rmsprop", { "lr": 0.001  }],
-      ["rmsprop", { "lr": 0.01   }],
-      ["sgd",     { "lr": 0.001, "nesterov": false}],
+      ["rmsprop", { "lr": 0.001 }],
+      ["rmsprop", { "lr": 0.0001  }],
       ["sgd",     { "lr": 0.001, "nesterov": true }]
     ],
-    "init": ["glorot_uniform", "normal"],
-    "activation": ["sigmoid", "relu"]
+    "init": ["normal"],
+    "activation": ["relu"]
   }
 }
