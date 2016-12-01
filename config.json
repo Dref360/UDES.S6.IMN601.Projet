@@ -18,51 +18,14 @@
     },
   "MLP":
   {
-    "nb_epoch": [
-      100,
-      150
-    ],
+    "nb_epoch": [100, 150],
+    "batch_size": [150],
     "optimizer": [
-      [
-        "rmsprop",
-        {
-          "lr": 0.001
-        }
-      ],
-      [
-        "rmsprop",
-        {
-          "lr": 0.01
-        }
-      ],
-      [
-        "rmsprop",
-        {
-          "lr": 0.0001
-        }
-      ],
-      [
-        "sgd",
-        {
-          "lr": 0.001,
-          "nesterov": false
-        }
-      ],
-      [
-        "sgd",
-        {
-          "lr": 0.001,
-          "nesterov": true
-        }
-      ]
+      ["rmsprop", { "lr": 0.001 }],
+      ["rmsprop", { "lr": 0.0001  }],
+      ["sgd",     { "lr": 0.001, "nesterov": true }]
     ],
-    "init": [
-      "glorot_uniform",
-      "normal"
-    ],
-    "activation": [
-      "sigmoid",
-      "relu"
-    ]
+    "init": ["normal"],
+    "activation": ["relu"]
   }
 }
