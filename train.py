@@ -42,7 +42,7 @@ logger.info('Args: %s', vars(options))
 logger.info("Downloading {} Keras dataset".format(options.db))
 module = importlib.import_module('keras.datasets.' + options.db)
 (X_train, y_train), (X_test, y_test) = module.load_data()
-if options.db == "cifar10" and backend() == "tensorflow" and options.method == "CNN":
+if options.db == "cifar10" and (backend() == "tensorflow" and options.method == "CNN") or options.features == "BOW":
     X_train = np.transpose(X_train, [0, 2, 3, 1])
     X_test = np.transpose(X_test, [0, 2, 3, 1])
 if options.db == "mnist" and options.method == "CNN":
