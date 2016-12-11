@@ -1,33 +1,51 @@
-BASE hierarchy for Machine Learning Project
+Le fichier à exécuter est train.py.
 
-analyze
-Scripts to analyze output, creating graphs and stats
+Une exécution de ce script effectue une grid search pour un algorithme donné et calcule les métriques de performance pour la meilleure configuration trouvée. 
 
-data
-This folder is to download/create/manipulate datas
+Les paramètres à explorer dans le grid search sont lu dans le fichier config.json.
+Voici un exemple de fichier qui spécifie les paramètres à utiliser pour SVM et RandomForest:
 
-lib
-Useful script not related to Machine Learning, for example handling bounding boxes
+{
+  "SVM":
+  [
+    {
+      "kernel": ["linear"],
+      "C": [0.01, 0.1, 1, 10, 100]
+    },
+    {
+      "kernel": ["rbf"],
+      "C": [0.1, 1, 10, 100, 1000],
+      "gamma": [1, 0.1, 0.01, 0.001]
+    }
+  ],
+  "RandomForest":
+  {
+    "criterion": ["gini", "entropy"],
+    "n_estimators": [1, 10, 100, 1000]
+  }
+}
 
-src
-Machine learning algorithm, model's definition, loss function, ect
+On peut remarquer que pour SVM, deux grilles de paramètres différentes seront explorées dans la recherche.
 
-test
-Unit test of the application
+En plus de ces paramètres, d'autres paramètres sont spécifiés en argument du script:
 
-To make h5py running
-sudo apt-get install libhdf5-dev
+--db 				default="mnist"		help="Keras dataset to use [mnist, cifar10]"
+--method 			default="SVM"		help="[SVM, RandomForest, MLP, CNN]"
+--train_set_prop 	default=1.0 		help="proportion of training samples to keep"
+--test_set_prop		default=1.0			help="proportion of test samples to keep"
+--features			default="original	help="[original,BOW]"
+--vocab_length		default=100 		help="length of vocabulary for BOW"
+--n_jobs			default=2	 		help="number of threads executing grid search"
 
-To install all dependencies
-pip3.5 install -r requirements.txt
 
-To install Tensorflow 0.9
+L'exécution du script se résume en quelques étapes:
 
-With GPU
-export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/gpu/tensorflow-0.10.0rc0-py3-none-any.whl
-
-CPU only
-export TF_BINARY_URL=https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-0.10.0rc0-py3-none-any.whl
-
-pip3.5 install --upgrade $TF_BINARY_URL
-
+	- Télécharger la base de données s'il elle ne l'est pas déjà
+	- Ajuster les dimensions des données selon certains autres paramètres
+	- Instancier le bon classificateur selon le paramètre
+	- Calculer les Bags of words si demandé
+	- Lancer la grille de recherche selon le fichier de configuration
+	- Tester le modèle avec l'ensemble de test
+	- Calculer et afficher les métriques
+	
+Les traces de l'exécution se retrouve dans le fichier de sortie logging.log.
